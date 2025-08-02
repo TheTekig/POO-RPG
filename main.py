@@ -4,6 +4,7 @@ import json
 from time import sleep
 from random import randint
 import datetime
+from termcolor import colored
 
 #region  //SAVE|LOAD\\
 
@@ -32,21 +33,19 @@ class Heroi(Pessoa):
 
     def status(self):
         sleep(0.5)
-        print(f"Nome: {self.nome}")
+        print(colored(f"\tNome: {self.nome}", "white", attrs=["bold"]))
         sleep(0.5)
-        print(f"Vida: {self.vida}/{self.vidamax}")
+        print(colored(f"\tVida: {self.vida}/{self.vidamax}", "white", attrs=["bold"]))
         sleep(0.5)
-        print(f"Defesa: {self.defesa}")
+        print(colored(f"\tDefesa: {self.defesa}", "white", attrs=["bold"]))
         sleep(0.5)
-        print(f"Ataque: {self.ataque}/{self.ataquemax}")
+        print(colored(f"\tAtaque: {self.ataque}/{self.ataquemax}", "white", attrs=["bold"]))
         sleep(0.5)
-        print(f"Nível: {self.nivel}")
+        print(colored(f"\tNível: {self.nivel}", "white", attrs=["bold"]))
         sleep(0.5)
-        print(f"XP: {self.xp}")
+        print(colored(f"\tXP: {self.xp}", "white", attrs=["bold"]))
         sleep(0.5)
-        print(f"Classe: {self.classe}")
-        sleep(0.5)
-        print(f"Mochila: {self.inventario}")
+        print(colored(f"\tClasse: {self.classe}", "white", attrs=["bold"]))
         sleep(0.5)
 
     def nivelar(self):
@@ -75,6 +74,8 @@ class Heroi(Pessoa):
             self.vida = self.vidamax
             self.ataquemax = self.ataque
 
+            print(colored(""))
+
     def atacar(self, inimigo):
         dano = self.ataque - inimigo.defesa
         if dano < 0:
@@ -83,7 +84,7 @@ class Heroi(Pessoa):
 
     def ataque_skills(self, inimigo, vSkillset, opcao):
 
-        if opcao == vSkillset['Arqueiro']['Tiro Preciso']:
+        if opcao == 'Tiro Preciso':
             if vSkillset['Arqueiro']['Tiro Preciso']['usos'] > 0:
                 self.ataque += vSkillset['Arqueiro']['Tiro Preciso']['bonus_ataque']
                 dano = self.ataque - (inimigo.defesa * vSkillset['Arqueiro']['Tiro Preciso']['ignora_defesa'])
@@ -95,7 +96,7 @@ class Heroi(Pessoa):
             else:
                 return False
 
-        elif opcao == vSkillset['Arqueiro']['Chuva de Flechas']:
+        if opcao == 'Chuva de Flechas':
             if vSkillset['Arqueiro']['Chuva de Flechas']['usos'] > 0:
                 for i in range(vSkillset['Arqueiro']['Chuva de Flechas']['hits']):
                     dano = self.ataque - inimigo.defesa
@@ -106,7 +107,7 @@ class Heroi(Pessoa):
             else:
                 return False
 
-        elif opcao == vSkillset['Guerreiro']['Investida']:
+        if opcao == 'Investida':
             if vSkillset['Guerreiro']['Investida']['usos'] > 0:
                 self.ataque += vSkillset['Guerreiro']['Investida']['bonus_ataque']
                 dano = self.ataque - inimigo.defesa
@@ -118,14 +119,14 @@ class Heroi(Pessoa):
             else:
                 return False
 
-        elif opcao == vSkillset['Guerreiro']['Escudo Supremo']:
+        if opcao == 'Escudo Supremo':
             if vSkillset['Guerreiro']['Escudo Supremo']['usos'] > 0:
                 self.defesa += vSkillset['Guerreiro']['Escudo Supremo']['bonus_defesa']
                 vSkillset['Guerreiro']['Escudo Supremo']['usos'] -= 1
             else:
                 return False
 
-        elif opcao == vSkillset['Assassino']['Ataque Furtivo']:
+        if opcao == "Ataque Furtivo":
             if vSkillset['Assassino']['Ataque Furtivo']['usos'] > 0:
                 self.ataque *= vSkillset['Assassino']['Ataque Furtivo']['bonus_critico']
                 dano = self.ataque - inimigo.defesa
@@ -137,7 +138,7 @@ class Heroi(Pessoa):
             else:
                 return False
 
-        elif opcao == vSkillset['Assassino']['Lamina Rapida']:
+        if opcao == 'Lamina Rapida':
             if vSkillset['Assassino']['Lamina Rapida']['usos'] > 0:
                 for i in range(vSkillset['Assassino']['Lamina Rapida']['hits']):
                     self.ataque *= vSkillset['Assassino']['Lamina Rapida']['dano_por_hit']
@@ -165,8 +166,8 @@ class Heroi(Pessoa):
         vSkillset['Assassino']['Lamina Rapida']['usos'] = vSkillset['Assassino']['Lamina Rapida']['totalusos']
 
     def mochila(self):
-        for item in self.inventario:
-            print(item)
+        for i, item in enumerate(self.inventario, start=1):
+            print(f"{i}.{item.nome} (vida +{item.vida}, ataque +{item.ataque})")
 
     def encontrar_item(self):
         item = pocoesger()['potion']
@@ -174,9 +175,8 @@ class Heroi(Pessoa):
         self.inventario.append(item)
 
     def pocao(self, pocao):
-        efeito = pocao
-        self.vida += efeito
-        self.ataque += efeito
+        self.vida += pocao.vida
+        self.ataque += pocao.ataque
         self.inventario.pop(pocao)
 
 
@@ -185,15 +185,16 @@ class Enemy(Pessoa):
         super().__init__(nome, vida, defesa, ataque, speed)
         self.localizacao = localizacao
         self.xp = xp
+        self.vidamax = vida
 
     def atacar(self, jogador):
         dano = self.ataque - jogador.defesa
         if dano < 0:
             dano = 0
         jogador.vida -= dano
-
-    def morreu(self):
-        return self.vida <= 0
+    
+    def morte(self,jogador):
+        jogador.xp += self.xp
 
 class Pocao:
     def __init__(self, nome, vida, ataque):
@@ -205,28 +206,34 @@ class Pocao:
 
 def mapa():
     Mapa = """
+
+
                                             [VILA BANDIDOS]
-    [CASTELO ABANDONADO]  [ACAMPAMENTO]      //
-            \               ||              //
+    [CASTELO ABANDONADO]  [ACAMPAMENTO]      /
+             ||              ||             /
         [MONTANHA]======[CIDADE]=======[CAMPO]=======[FLORESTA]
             //             ||                            //
     [DUNGEON]              ||                           //
                         [TORRE SOMBRIA]        [FLORESTA DENSA]
 
+
     """
-    print(Mapa)
+    print(colored(Mapa,"white", "on_grey",attrs=["bold"]))
 
 def combate(heroi, inimigo,vSkillset):
     while True:
 
         if heroi.vida <= 0:
-            print(f"{heroi.nome} foi derrotado!")
+            print(colored(f"{heroi.nome} foi derrotado!", "red", "on_grey"))
             break
         elif inimigo.vida <= 0:
-            print(f"{inimigo.nome} foi derrotado!")
+            print(colored(f"{inimigo.nome} foi derrotado!", "green", "on_grey"))
+            inimigo.morte(heroi)
+            heroi.nivelar()
             break
 
-
+        print("\n")
+        print(colored(f"{heroi.nome}:", "white", attrs=["bold"]), colored(f"{heroi.vida}", "white"), "/", colored(f"{heroi.vidamax}", "blue"), "  ⚔️  " , colored(f"{inimigo.nome}:", "red", attrs=["bold"]), colored(f"{inimigo.vida}"), "/", colored(f"{inimigo.vidamax}", "magenta"))
         vez = ["Jogador", "Inimigo"]
         peso = [heroi.speed, inimigo.speed]
         vez = random.choices(vez, weights=peso, k=1)
@@ -234,38 +241,50 @@ def combate(heroi, inimigo,vSkillset):
 
         if vez[0] == "Jogador":
             menu_Combate()
-            opcao = input("Escolha uma opção: ")
-            while opcao not in ["1","2","3","4"]: opcao = input("Opção Invalida\nEscolha uma opção: ")
+            opcao = input(colored("\tOP: ", "red", attrs=["bold"]))
+            while opcao not in ["1","2","3","4"]: opcao = input(colored("\tOpção Invalida\n\tOP: ", "red", attrs=["bold"]))
 
             if opcao == "1":
                 heroi.atacar(inimigo)
-                print(f"{heroi.nome} atacou {inimigo.nome} com {heroi.ataque} de dano!")
+                print(colored(f"{heroi.nome} atacou {inimigo.nome} com {heroi.ataque} de dano!", "white", attrs=["bold"]))
                 continue
 
             if opcao == "2":
-                print("=" * 50)
                 print("Skills")
-                print("=" * 50)
-                heroi.ataque_skills(inimigo, vSkillset, nome_skill_escolhida)
-                print(f"{heroi.nome} usou {nome_skill_escolhida} em {inimigo.nome}!")
+                skills = list(vSkillset[heroi.classe].keys())
+                for i, chave in enumerate(vSkillset[heroi.classe].keys(), start=1):
+                    usos_restantes = vSkillset[heroi.classe][chave]['usos']
+                    total_usos = vSkillset[heroi.classe][chave]['totalusos']
+                    print(f"{i}. {chave} ({usos_restantes}/{total_usos})")
+
+                opcao_skill = int(input("Escolha uma Skill: "))
+                nome_skill_escolhida = skills[opcao_skill - 1]   
+                
+                resultado = heroi.ataque_skills(inimigo, vSkillset, nome_skill_escolhida)
+                
+                if resultado is False:
+                    print(colored("\n\tVoce nao tem mais usos para essa skill!","red", "on_grey"))
+                else:
+                    print(colored(f"\n{heroi.nome} usou {nome_skill_escolhida} em {inimigo.nome}!", "green", "on_grey"))
                 continue
 
             if opcao == "3":
                 heroi.mochila()
-                opcao = input("Escolha uma opção: ")
-                while item not in heroi.inventario: opcao = input("Opção Invalida\nEscolha uma opção: ")
-                heroi.pocao(opcao)
-                print(f"{heroi.nome} usou uma poção!")
+                opcao = int(input(colored("\tOP: ", "red", attrs=["bold"])))
+                while opcao < 1 or opcao > len(heroi.inventario) : opcao = int(input(colored("\tOpção Invalida\n\tOP: ", "red", attrs=["bold"])))
+                pocao = heroi.inventario[opcao - 1]
+                heroi.pocao(pocao)
+                print(colored(f"{heroi.nome} usou a poção - {pocao.nome}!", "blue", "on_grey"))
                 continue
 
             if opcao == "4":
                 fugir = random.choices(vez, weights=peso, k=1)
 
                 if fugir == "Jogador":
-                    print(f"{heroi.nome} fugiu!")
+                    print(colored(f"{heroi.nome} fugiu!", "red"))
                     break
                 else:
-                    print(f"Jogador não conseguiu fugir!")
+                    print(colored(f"Jogador não conseguiu fugir!", "red"))
                     continue 
         else:
 
@@ -274,23 +293,26 @@ def combate(heroi, inimigo,vSkillset):
 
 def move(vLocal,localizacao):
 
-        print("Onde Deseja ir?")
-        print("=" * 50)
+        print(colored("\t\t    Onde Deseja ir?      ", "white", attrs=["bold"]))
         for i in localizacao:
             if i != localizacao[-1]:
-                print(f"{i}", end=" | ")
-        print("Ficar")
-        print("=" * 50)
-        opcao = input("")
+                print(colored(f"{i}", "white", attrs=["bold"]), end=" | ")
+        print(colored("Ficar", "white"))
+        opcao = input(colored("Local: ", "white", attrs=["bold"]))
         if opcao == "Ficar": opcao = localizacao[-1]
-        while opcao not in localizacao: opcao = input("Opção Invalida\nEscolha uma opção: ")
+        while opcao not in localizacao: 
+            opcao = input(colored("\tOpção Invalida\n\tOP: ", "red", attrs=["bold"]))
+            if opcao == "Ficar": 
+                opcao = localizacao[-1]
+                break
+
         localizacao = vLocal[opcao]
         return localizacao
 
 def acontecimentos():
 
     Ocorrencia = ["Nada Ocorreu", "Inimigo Encontrado", "Item Achado"]
-    peso = [0.4, 0.5, 0.1]
+    peso = [0.1, 0.6, 0.3]
     ocorrencia = random.choices(Ocorrencia, weights=peso, k=1)
     return ocorrencia[0]
 
@@ -301,53 +323,74 @@ def controlador(vLocal,heroi,vSkillset):
         opcao = opcoes()
 
         if opcao == "1":
-            print("=" * 50)
-            print("Explorar")
+            print(colored("\t\t\tExplorar", "green", attrs=["bold"]))
             localizacao = move(vLocal,localizacao)
             ocorrencia = acontecimentos()
 
             if ocorrencia == "Inimigo Encontrado":
-                print("Um inimigo apareceu!")
-                print("=" * 50)
-                print("Tipo da variável 'localizacao':", type(localizacao))
-                print("Valor da variável 'localizacao':", localizacao[-1])
+                print(colored("\t\t   Um Inimigo Surgiu!", "red", "on_grey", attrs=["bold"]))
                 inimigo = inimigos()[localizacao[-1]]
                 inimigo = random.choice(inimigo)
                 combate(heroi, inimigo, vSkillset)
-                print("=" * 50)
 
-            if ocorrencia == "Item Achado":
-                print("Um item foi encontrado!")
+
+            if ocorrencia == "Item Achado":               
+                print(colored("\n\t\t   Um Item Foi Achado", "yellow", "on_grey", attrs=["bold"]))
+
                 heroi.encontrar_item()
-                
-                print("=" * 50)
+
 
             if ocorrencia == "Nada Ocorreu":
-                print("Nada aconteceu!")
-                print("=" * 50)
+                print(colored("\n\t\t  Nada Ocorreu", "blue", "on_grey", attrs=["bold"]))
 
-            print("=" * 50)
 
         if opcao == "2":
-            print("=" * 50)
-            print("Inventário")
-            print("=" * 50)
+            print(colored("\n\t\t  Inventário", "cyan", "on_grey", attrs=["bold"]))
+            heroi.mochila()
 
         if opcao == "3":
-            print("=" * 50)
-            print("Status")
+            print(colored("\n\t\t\tStatus", "magenta", "on_grey", attrs=["bold"]))
             heroi.status()
+        
+        if opcao == "4":
+            print(colored("\n\t\t\tMapa", "white", "on_grey", attrs=["bold"]))
             mapa()
-            print("=" * 50)
 
 #region     //Cadastros\\
 
-def cadastrar_heroi(vClasse):
+def mostrar_classes():
+    print("\n")
+    print(colored("           CLASSES DISPONIVEIS          ", "yellow", "on_grey", attrs=["bold"]))
+    print("\n")
+    print(colored("   🏹 Arqueiro", "cyan", attrs=["bold"]))
+    print("     - Ataque: 14")
+    print("     - Vida: 16")
+    print("     - Defesa: 6")
+    print("     - Velocidade: 6")
+    print(colored("     Especialidade: Alta precisão e ataques à distância.\n", "cyan"))
 
-    nome = input("Digite o nome do herói: ")
-    classe = input("Digite a classe do herói: ")
-    classe = vClasse[classe]
-    heroi = Heroi(nome, classe['vidamax'], classe['defesa'], classe['ataquemax'], classe, classe['speed'])
+    print(colored("   🗡️ Assassino", "red", attrs=["bold"]))
+    print("     - Ataque: 18")
+    print("     - Vida: 12")
+    print("     - Defesa: 4")
+    print("     - Velocidade: 8")
+    print(colored("     Especialidade: Críticos e velocidade.\n", "red"))
+
+    print(colored("   🛡️ Guerreiro", "green", attrs=["bold"]))
+    print("     - Ataque: 11")
+    print("     - Vida: 22")
+    print("     - Defesa: 10")
+    print("     - Velocidade: 4")
+    print(colored("     Especialidade: Resistência e força bruta.\n", "green"))
+
+def cadastrar_heroi(vClasse):
+    print(colored("\t       CADASTRO       ", "white", "on_grey", attrs=["bold"]))
+    nome = input(colored("\tHerói: ", "white", attrs=["bold"]))
+    mostrar_classes()
+    nome_classe = input(colored("\tClasse: ", "white", attrs=["bold"]))
+    print(colored("                                      ", "white", "on_grey"))
+    classe = vClasse[nome_classe]
+    heroi = Heroi(nome, classe['vidamax'], classe['defesa'], classe['ataquemax'], nome_classe, classe['speed'])
 
     return heroi
 
@@ -421,49 +464,25 @@ def pocoesger():
 
 #region       //Menu\\
 def menu_HUD(localizacao):
-    print("-=-" * 20)
-    sleep(0.5)
-    print("\t\tHUD")
-    sleep(0.5)
-    print("=" * 60)
-    sleep(0.5)
-    print(f"\tLocalização: {localizacao}")
-    sleep(0.5)
-    print("=" * 60)
-    sleep(0.5)
-    print("1. Explorar  |  2. Inventario  |  3. Status")
-    sleep(0.5)
-    print("-=-" * 20)
+    print("\n")
+    print(colored(f"\t\t      Localização: {localizacao[-1]}      ", "white", "on_grey", attrs=["bold"]))
+    print(colored("1. 🌍Explorar  |  2. 🎒Inventario  |  3. ✨Status  |  4. 🗺️ Mapa  ", "white", "on_grey", attrs=["bold"] ))
 
 def menu_Combate():
-    print("-=-" * 20)
-    sleep(0.5)
-    print("Combate")
-    sleep(0.5)
-    print("-=-" * 20)
-    sleep(0.5)
-    print("1. Atacar  |  2. Skills  |  3. Poções  |  4. Fugir")
-    sleep(0.5)
-    print("-=-" * 20)
+    print(colored("\n\t\t      Combate      ", "red", attrs=["bold"]))
+    print(colored("1. ⚔️ Atacar  |  2. 🌟Skills  |  3. 🧪Poções  |  4. 🏃🏽‍♂️ Fugir", "white", attrs=["bold"]))
 
 def menu():
-    print("=" * 50)
-    sleep(0.5)
-    print("Sistemas RPG - POO")
-    sleep(0.5)
-    print("=" * 50)
-    sleep(0.5)
-    print("1.      Jogar")
-    sleep(0.5)
-    print("2. Cadastrar Heroi")
-    sleep(0.5)
-    print("3.      Sair")
-    sleep(0.5)
-    print("=" * 50)
+    print("\n")
+    print(colored("\t       EUCHRONIA      ", "red", "on_grey", attrs=["bold"]))
+    print(colored("\t1.       Jogar", "white", attrs=["bold"]))
+    print(colored("\t2.  Cadastrar Heroi", "white", attrs=["bold"]))
+    print(colored("\t3.       Sair", "white", attrs=["bold"]))
+    print(colored("\t                      ", "grey", attrs=["reverse"]))
 
 def opcoes():
-    opcao = input("Escolha uma opção: ")
-    while opcao not in ["1","2","3"]: opcao = input("Opção Invalida\nEscolha uma opção: ")
+    opcao = input(colored("\tOP: ", "red", attrs=["bold"]))
+    while opcao not in ["1","2","3","4"]: opcao = input(colored("\t    Opção Invalida   \n\tOP: ", "red", attrs=["bold"]))
     return opcao
 
 #endregion
@@ -561,18 +580,13 @@ def main():
         opcao = opcoes()
 
         if opcao == "1":
-            print("=" * 50)
             controlador(vLocal,heroi,vSkillset)
-            print("=" * 50)
 
         if opcao == "2":
-            print("=" * 50)
             heroi = cadastrar_heroi(vClasse)
-            print("=" * 50)
 
         if opcao == "3":
             print("Saindo do programa...")
-            sleep(1)
             break
 
 main()
