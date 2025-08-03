@@ -53,7 +53,7 @@ Um RPG de console em Python com:
 
 Instale as dependências:
 
-        pip install termcolor pdfkit
+        pip install termcolor
 
 Execute:
 
