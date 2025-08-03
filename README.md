@@ -8,7 +8,7 @@ Um RPG de console em Python com:
         - Inventário básico
         - Eventos aleatórios
         - HUD colorido (usando `termcolor`)
-        - Exportação de currículo em PDF (bônus)
+
 
 ---
 
