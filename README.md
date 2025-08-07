@@ -51,11 +51,11 @@ Um RPG de console em Python com:
         git clone https://github.com/seuusuario/projeto12-rpg-console.git
         cd projeto12-rpg-console
 
-Instale as dependências:
+2. Instale as dependências:
 
         pip install termcolor
 
-Execute:
+3. Execute:
 
         python main.py
 
