@@ -1,4 +1,4 @@
-# Projeto 12 – RPG Console com Mapa
+# RPG Console com Mapa
 
 Um RPG de console em Python com:
 
