@@ -59,17 +59,17 @@ class Heroi(Pessoa):
             if self.classe == "Guerreiro":
                 self.vidamax += 8
                 self.ataque += 1
-                self.defesa += 2
+                self.defesa += 0.3
 
             elif self.classe == "Arqueiro":
                 self.vidamax += 6
                 self.ataque += 2
-                self.defesa += 1
+                self.defesa += 0.1
 
             elif self.classe == "Assassino":
                 self.vidamax += 10
                 self.ataque += 3
-                self.defesa += 1
+                self.defesa += 0.1
                 self.speed += 1
 
             self.vida = self.vidamax
@@ -392,21 +392,21 @@ def mostrar_classes():
     print(colored("   🏹 Arqueiro", "cyan", attrs=["bold"]))
     print("     - Ataque: 14")
     print("     - Vida: 16")
-    print("     - Defesa: 6")
+    print("     - Defesa: 3")
     print("     - Velocidade: 6")
     print(colored("     Especialidade: Alta precisão e ataques à distância.\n", "cyan"))
 
     print(colored("   🗡️ Assassino", "red", attrs=["bold"]))
     print("     - Ataque: 18")
     print("     - Vida: 12")
-    print("     - Defesa: 4")
+    print("     - Defesa: 2")
     print("     - Velocidade: 8")
     print(colored("     Especialidade: Críticos e velocidade.\n", "red"))
 
     print(colored("   🛡️ Guerreiro", "green", attrs=["bold"]))
     print("     - Ataque: 11")
     print("     - Vida: 22")
-    print("     - Defesa: 10")
+    print("     - Defesa: 5")
     print("     - Velocidade: 4")
     print(colored("     Especialidade: Resistência e força bruta.\n", "green"))
 
@@ -424,60 +424,60 @@ def cadastrar_heroi(vClasse):
 def inimigos():
     return {    
             "Cidade" : [
-                Enemy("Ratinho", 1, 1, 1, "Cidade", 1, 1)
+                Enemy("Ratinho", 1, 1, 1, "Cidade", 1, randint(0, 1))
                 ],
 
             "Campo" : [
-                Enemy("Lobo Selvagem", 12, 2, 3, "Campo", 5, 5),
-                Enemy("Javali", 14, 3, 2, "Campo", 3, 6),
-                Enemy("Bandido Novato", 10, 1, 4, "Campo", 4, 7)
+                Enemy("Lobo Selvagem", 12, 2, 10, "Campo", 5, randint(1, 5)),
+                Enemy("Javali", 14, 3, 8, "Campo", 8, randint(1, 6)),
+                Enemy("Bandido Novato", 10, 1, 12, "Campo", 4, randint(1, 7))
                 ],
 
             "Floresta" : [
-                Enemy("Goblin", 16, 3, 5, "Floresta", 6, 10),
-                Enemy("Aranha Gigante", 18, 4, 5, "Floresta", 4, 12),
-                Enemy("Lobo Alfa", 20, 4, 6, "Floresta", 7, 14)
+                Enemy("Goblin", 16, 3, 12, "Floresta", 6, randint(1, 10)),
+                Enemy("Aranha Gigante", 18, 4, 18, "Floresta", 4, randint(1, 12)),
+                Enemy("Lobo Alfa", 20, 4, 20, "Floresta", 7, randint(1, 14))
                 ],
 
             "Floresta_Densa" : [
-                Enemy("Troll da Floresta", 28, 5, 7, "Floresta_Densa", 2, 20),
-                Enemy("Druida Corrompido", 22, 3, 8, "Floresta_Densa", 5, 18),
-                Enemy("Jaguatirica Fantasma", 18, 4, 9, "Floresta_Densa", 8, 22)
+                Enemy("Troll da Floresta", 28, 5, 10, "Floresta_Densa", 2, randint(1, 20)),
+                Enemy("Druida Corrompido", 22, 3, 12, "Floresta_Densa", 5, randint(1, 18)),
+                Enemy("Jaguatirica Fantasma", 18, 4, 10, "Floresta_Densa", 8, randint(1, 22))
                 ],
 
             "Vila_Bandidos" : [
-                Enemy("Bandido Veterano", 22, 5, 7, "Vila_Bandidos", 5, 20),
-                Enemy("Arqueiro Mercenário", 18, 3, 9, "Vila_Bandidos", 7, 18),
-                Enemy("Capanga do Chefe", 24, 5, 8, "Vila_Bandidos", 4, 22)
+                Enemy("Bandido Veterano", 22, 5, 14, "Vila_Bandidos", 5, randint(1, 20)),
+                Enemy("Arqueiro Mercenário", 18, 3, 12, "Vila_Bandidos", 7, randint(1, 18)),
+                Enemy("Capanga do Chefe", 24, 5, 15, "Vila_Bandidos", 4, randint(1, 22))
                 ],
 
             "Acampamento" : [
-                Enemy("Capitão Bandido", 26, 6, 8, "Acampamento", 5, 25),
-                Enemy("Ladino Emboscador", 20, 4, 10, "Acampamento", 8, 23),
-                Enemy("Caçador de Recompensas", 22, 5, 9, "Acampamento", 6, 24)
+                Enemy("Capitão Bandido", 26, 6, 17, "Acampamento", 5, randint(1, 25)),
+                Enemy("Ladino Emboscador", 20, 4, 15, "Acampamento", 8, randint(1, 23)),
+                Enemy("Caçador de Recompensas", 22, 5, 14, "Acampamento", 6, randint(1, 24))
                 ],
 
             "Torre_Sombria" : [
-                Enemy("Feiticeiro Aprendiz", 20, 3, 11, "Torre_Sombria", 6, 26),
-                Enemy("Espírito Sombrio", 24, 4, 10, "Torre_Sombria", 7, 28),
-                Enemy("Cavaleiro Espectral", 30, 7, 9, "Torre_Sombria", 4, 30)
+                Enemy("Feiticeiro Aprendiz", 20, 3, 11, "Torre_Sombria", 6, randint(1, 26)),
+                Enemy("Espírito Sombrio", 24, 4, 10, "Torre_Sombria", 7, randint(1, 28)),
+                Enemy("Cavaleiro Espectral", 30, 7, 17, "Torre_Sombria", 4, randint(1, 30))
                 ],
 
             "Montanha" : [
-                Enemy("Urso Pardo", 32, 6, 10, "Montanha", 4, 32),
-                Enemy("Harpia", 26, 5, 11, "Montanha", 8, 34),
-                Enemy("Gigante das Rochas", 40, 8, 9, "Montanha", 3, 40)
+                Enemy("Urso Pardo", 32, 6, 15, "Montanha", 4, randint(1, 32)),
+                Enemy("Harpia", 26, 5, 18, "Montanha", 8, randint(1, 34)),
+                Enemy("Gigante das Rochas", 40, 8, 17, "Montanha", 3, randint(1, 40))
                 ],
 
             "Castelo_Abandonado" : [
-                Enemy("Cavaleiro Fantasma", 34, 7, 11, "Castelo_Abandonado", 5, 38),
-                Enemy("Zumbi de Armadura", 36, 9, 9, "Castelo_Abandonado", 2, 36),
-                Enemy("Gárgula", 30, 6, 12, "Castelo_Abandonado", 7, 40)
+                Enemy("Cavaleiro Fantasma", 34, 7, 22, "Castelo_Abandonado", 5, randint(1, 38)),
+                Enemy("Zumbi de Armadura", 36, 9, 15, "Castelo_Abandonado", 2, randint(1, 36)),
+                Enemy("Gárgula", 30, 6, 25, "Castelo_Abandonado", 7, randint(1, 40))
                 ],
             "Dungeon" : [
-                Enemy("Esqueleto Guerreiro", 34, 7, 12, "Dungeon", 6, 45),
-                Enemy("Necromante", 32, 5, 14, "Dungeon", 7, 50),
-                Enemy("Demônio Guardião", 50, 10, 13, "Dungeon", 5, 70)
+                Enemy("Esqueleto Guerreiro", 34, 7, 13, "Dungeon", 6, randint(1, 45)),
+                Enemy("Necromante", 32, 5, 16, "Dungeon", 7, randint(1, 50)),
+                Enemy("Demônio Guardião", 50, 10, 25, "Dungeon", 5, randint(1, 70))
                 ]
     }
 
@@ -529,9 +529,9 @@ def opcoes():
 def main():
 
     vClasse = {
-    "Arqueiro"  : {"ataquemax": 14, "vidamax": 16, "defesa": 6, "speed" : 6},
-    "Guerreiro" : {"ataquemax": 11, "vidamax": 22, "defesa": 10, "speed" : 4},
-    "Assassino" : {"ataquemax": 18, "vidamax": 12, "defesa": 4, "speed" : 8}
+    "Arqueiro"  : {"ataquemax": 14, "vidamax": 16, "defesa": 3, "speed" : 6},
+    "Guerreiro" : {"ataquemax": 11, "vidamax": 22, "defesa": 5, "speed" : 4},
+    "Assassino" : {"ataquemax": 18, "vidamax": 12, "defesa": 2, "speed" : 8}
     }
 
     vSkillset = {
